@@ -15,6 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import Manager.AppManager;
+
+
+
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
  */
@@ -70,6 +74,9 @@ public final class Main {
         ArrayNode output = objectMapper.createArrayNode();
 
         //TODO add here the entry point to your implementation
+        // output.addPOJO(new Sentinel(0, 0, 0, "", "", ""));
+
+        AppManager.instance.startApp(inputData, output);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
