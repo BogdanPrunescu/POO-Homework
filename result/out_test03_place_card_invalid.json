@@ -1,11 +1,10 @@
 [ {
-  "mana" : 0,
-  "health" : 0,
-  "attackDamage" : 0,
-  "description" : "",
-  "colors" : "",
-  "name" : "",
-  "hasAttacked" : false,
-  "isFrozen" : false,
-  "hasAbility" : false
+  "command" : null,
+  "handIdx" : 0,
+  "cardAttacker" : null,
+  "cardAttacked" : null,
+  "affectedRow" : 0,
+  "playerIdx" : 0,
+  "x" : 0,
+  "y" : 0
 } ]

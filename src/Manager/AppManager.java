@@ -30,6 +30,10 @@ public class AppManager {
         for (GameInput games_elem : input.getGames()) {
             games.add(new Game(games_elem));
         }
+
+        for (Game game : games) {
+            GameManager.instance.startGame(game, playerOneDecks, playerTwoDecks, output);
+        }
     }
 
 }

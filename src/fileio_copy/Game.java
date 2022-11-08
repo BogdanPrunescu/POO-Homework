@@ -2,7 +2,6 @@ package fileio_copy;
 
 import fileio.ActionsInput;
 import fileio.GameInput;
-import fileio.StartGameInput;
 
 import java.util.ArrayList;
 
@@ -15,5 +14,21 @@ public class Game {
         for (ActionsInput actions : gameInput.getActions()) {
             this.actions.add(new Actions(actions));
         }
+    }
+
+    public StartGame getStartGame() {
+        return startGame;
+    }
+
+    public void setStartGame() {
+        this.startGame = startGame;
+    }
+
+    public ArrayList<Actions> getActions() {
+        return actions;
+    }
+
+    public void setActions(ArrayList<Actions> actions) {
+        this.actions = actions;
     }
 }

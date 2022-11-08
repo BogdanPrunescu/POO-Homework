@@ -17,6 +17,7 @@ import java.util.Objects;
 
 import Manager.AppManager;
 
+import fileio_copy.*;
 
 
 /**
@@ -76,7 +77,9 @@ public final class Main {
         //TODO add here the entry point to your implementation
         // output.addPOJO(new Sentinel(0, 0, 0, "", "", ""));
 
-        AppManager.instance.startApp(inputData, output);
+        // AppManager.instance.startApp(inputData, output);
+
+        output.addPOJO(new Actions());
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
