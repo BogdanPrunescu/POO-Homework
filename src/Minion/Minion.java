@@ -1,35 +1,30 @@
 package Minion;
 
+import fileio.CardInput;
+import fileio.Coordinates;
+import fileio_copy.Card;
+
 import java.util.ArrayList;
 
-public abstract class Minion {
+public abstract class Minion extends Card {
 
-    public int mana;
-    public int health;
+
     public int attackDamage;
-
-    public String description;
-    public String colors;
-    public ArrayList<String> name;
+    public int health;
 
     public boolean hasAttacked = false;
     public boolean isFrozen = false;
     public boolean hasAbility = false;
+    public boolean frontLiner;
 
-    public void Action() {}
-    public void Exceptions() {
+    public void Action(ArrayList<ArrayList<Card>> board, Coordinates target) {}
 
-    }
-
-    public Minion(int mana, int health, int attackDamage,
-                  String description, String colors,
-                  ArrayList<String> name, boolean hasAbility) {
-        this.mana = mana;
-        this.health = health;
-        this.attackDamage = attackDamage;
-        this.description = description;
-        this.colors = colors;
-        this.name = name;
+    public Minion(CardInput card, boolean hasAbility, boolean frontLiner) {
+        super(card, false, true);
+        this.mana = card.getMana();
+        this.attackDamage = card.getAttackDamage();
+        this.health = card.getHealth();
         this.hasAbility = hasAbility;
+        this.frontLiner = frontLiner;
     }
 }

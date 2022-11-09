@@ -5,45 +5,21 @@ import fileio.CardInput;
 import java.util.ArrayList;
 
 public class Card {
-
-    private int mana;
-    private int attackDamage;
-    private int health;
     private String description;
     private ArrayList<String> colors;
     private String name;
 
-    public Card(CardInput card) {
+    public int mana;
+    public boolean isEnvironment;
+    public boolean isMinion;
+
+    public Card(CardInput card, boolean isEnvironment, boolean isMinion) {
+        this.description = card.getDescription();
+        this.colors = card.getColors();
+        this.name = card.getName();
         this.mana = card.getMana();
-        this.attackDamage = attackDamage;
-        this.health = health;
-        this.description = description;
-        this.colors = colors;
-        this.name = name;
-    }
-
-    public int getMana() {
-        return mana;
-    }
-
-    public void setMana(int mana) {
-        this.mana = mana;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
-    }
-
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
+        this.isEnvironment = isEnvironment;
+        this.isMinion = isMinion;
     }
 
     public String getDescription() {

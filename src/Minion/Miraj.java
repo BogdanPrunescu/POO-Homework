@@ -1,4 +1,10 @@
 package Minion;
 
-public class Miraj {
+import fileio.CardInput;
+
+public class Miraj extends Minion{
+
+    public Miraj(CardInput cards) {
+        super(cards, true, true);
+    }
 }

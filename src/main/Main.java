@@ -79,8 +79,6 @@ public final class Main {
 
         // AppManager.instance.startApp(inputData, output);
 
-        output.addPOJO(new Actions());
-
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
     }

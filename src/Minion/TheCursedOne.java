@@ -1,4 +1,10 @@
 package Minion;
 
-public class TheCursedOne {
+import fileio.CardInput;
+
+public class TheCursedOne extends Minion {
+
+    public TheCursedOne(CardInput cards) {
+        super(cards, true, false);
+    }
 }

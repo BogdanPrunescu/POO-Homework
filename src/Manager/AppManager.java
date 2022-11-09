@@ -17,21 +17,21 @@ public class AppManager {
     private Input input;
     private ArrayNode output;
 
-    private Decks playerOneDecks;
-    private Decks playerTwoDecks;
+    private DecksInput playerOneDecks;
+    private DecksInput playerTwoDecks;
 
-    private ArrayList<Game> games = new ArrayList<Game>();
+    private ArrayList<GameInput> games = new ArrayList<GameInput>();
 
     public void startApp(Input input, ArrayNode output) {
 
-        playerOneDecks = new Decks(input.getPlayerOneDecks());
-        playerTwoDecks = new Decks(input.getPlayerTwoDecks());
+        playerOneDecks = input.getPlayerOneDecks();
+        playerTwoDecks = input.getPlayerTwoDecks();
 
         for (GameInput games_elem : input.getGames()) {
-            games.add(new Game(games_elem));
+            games.add(games_elem);
         }
 
-        for (Game game : games) {
+        for (GameInput game : games) {
             GameManager.instance.startGame(game, playerOneDecks, playerTwoDecks, output);
         }
     }
