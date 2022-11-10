@@ -11,8 +11,14 @@ import fileio_copy.*;
 
 public class AppManager {
 
-    public static AppManager instance = new AppManager();
-    private AppManager() {}
+    public static AppManager instance = null;
+    public static AppManager getInstance() {
+        if (instance == null) {
+            instance = new AppManager();
+        }
+
+        return instance;
+    }
 
     private Input input;
     private ArrayNode output;
@@ -32,8 +38,10 @@ public class AppManager {
         }
 
         for (GameInput game : games) {
-            GameManager.instance.startGame(game, playerOneDecks, playerTwoDecks, output);
+            GameManager instance = GameManager.getInstance();
+            GameManager.instance.prepareGame(game.getStartGame(), playerOneDecks, playerTwoDecks, output);
+            GameManager.instance.startGame(game.getActions(), output);
+            GameManager.instance = null;
         }
     }
-
 }

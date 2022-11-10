@@ -1,16 +1,19 @@
 package fileio_copy;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fileio.CardInput;
 
 import java.util.ArrayList;
 
-public class Card {
+public abstract class Card {
     private String description;
     private ArrayList<String> colors;
     private String name;
 
     public int mana;
+    @JsonIgnore
     public boolean isEnvironment;
+    @JsonIgnore
     public boolean isMinion;
 
     public Card(CardInput card, boolean isEnvironment, boolean isMinion) {

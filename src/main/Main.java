@@ -75,9 +75,8 @@ public final class Main {
         ArrayNode output = objectMapper.createArrayNode();
 
         //TODO add here the entry point to your implementation
-        // output.addPOJO(new Sentinel(0, 0, 0, "", "", ""));
-
-        // AppManager.instance.startApp(inputData, output);
+        AppManager instance = AppManager.getInstance();
+        AppManager.instance.startApp(inputData, output);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);

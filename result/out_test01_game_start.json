@@ -1,10 +1,17 @@
 [ {
-  "command" : null,
-  "handIdx" : 0,
-  "cardAttacker" : null,
-  "cardAttacked" : null,
-  "affectedRow" : 0,
-  "playerIdx" : 0,
-  "x" : 0,
-  "y" : 0
+  "description" : "Premium card: Time to show who we are, the low-class was never scared of you.",
+  "colors" : [ "Brown", "Pink", "Purple" ],
+  "name" : "King Mudface",
+  "mana" : 2,
+  "attackDamage" : 0,
+  "health" : 0,
+  "playingMana" : 0
+}, {
+  "description" : "Premium card: Time to show who we are, the low-class was never scared of you.",
+  "colors" : [ "Brown", "Pink", "Purple" ],
+  "name" : "King Mudface",
+  "mana" : 2,
+  "attackDamage" : 0,
+  "health" : 0,
+  "playingMana" : 0
 } ]
