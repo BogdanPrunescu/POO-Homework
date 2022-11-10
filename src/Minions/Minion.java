@@ -1,6 +1,7 @@
 package Minions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fileio.CardInput;
 import fileio.Coordinates;
 import fileio_copy.Card;
@@ -8,6 +9,7 @@ import fileio_copy.Card;
 import java.util.ArrayList;
 
 
+@JsonPropertyOrder( {"mana", "attackDamage", "health", "description", "colors", "name"} )
 public abstract class Minion extends Card {
 
     public int attackDamage;

@@ -5,9 +5,9 @@ import fileio.Coordinates;
 
 import java.util.ArrayList;
 
-public class Discipline extends Minion {
+public class Disciple extends Minion {
 
-    public Discipline(CardInput cards) {
+    public Disciple(CardInput cards) {
         super(cards, true, false, false);
     }
 

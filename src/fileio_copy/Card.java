@@ -6,11 +6,11 @@ import fileio.CardInput;
 import java.util.ArrayList;
 
 public abstract class Card {
+
+    public int mana;
     private String description;
     private ArrayList<String> colors;
     private String name;
-
-    public int mana;
     @JsonIgnore
     public boolean isEnvironment;
     @JsonIgnore

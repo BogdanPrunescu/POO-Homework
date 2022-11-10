@@ -9,6 +9,7 @@ import fileio.*;
 import fileio_copy.*;
 import Minions.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,6 +34,8 @@ public class GameManager {
 
     ArrayList<ArrayList<Minion>> board = new ArrayList<>();
     ArrayList<Integer> playerHasTank = new ArrayList<>();
+
+    ArrayList<ArrayList<Card>> hands = new ArrayList<>();
     int startingPlayer;
 
     int currentPlayer;
@@ -48,10 +51,16 @@ public class GameManager {
         // shifting startingPlayer number to work well with gameDecks array
         startingPlayer = startingPlayer - 1;
 
+        ArrayList<DecksInput> playerDecks = new ArrayList<DecksInput>() {
+            {
+                add(playerOneDecks);
+                add(playerTwoDecks);
+            }
+        };
         // assign the decks of each player
         for (int i = 0; i < 2; i++) {
             ArrayList<Card> tmp = new ArrayList<>();
-            for (CardInput cards : playerOneDecks.getDecks().get(i == 0 ? pOneIdx : pTwoIdx)) {
+            for (CardInput cards : playerDecks.get(i).getDecks().get(i == 0 ? pOneIdx : pTwoIdx)) {
                 switch (cards.getName()) {
                     // Simple minions
                     case "Sentinel" -> tmp.add(new Sentinel(cards));
@@ -63,7 +72,7 @@ public class GameManager {
                     // Minions with abilities
                     case "Miraj" -> tmp.add(new Miraj(cards));
                     case "The Ripper" -> tmp.add(new TheRipper(cards));
-                    case "Discipline" -> tmp.add(new Discipline(cards));
+                    case "Disciple" -> tmp.add(new Disciple(cards));
                     case "The Cursed One" -> tmp.add(new TheCursedOne(cards));
 
 
@@ -76,11 +85,9 @@ public class GameManager {
             }
             gameDecks.add(tmp);
         }
-
         // shuffling decks
-        Random random = new Random(startGameInput.getShuffleSeed());
-        shuffle(gameDecks.get(0), random);
-        shuffle(gameDecks.get(1), random);
+        shuffle(gameDecks.get(0), new Random(startGameInput.getShuffleSeed()));
+        shuffle(gameDecks.get(1), new Random(startGameInput.getShuffleSeed()));
 
         CardInput hero = startGameInput.getPlayerOneHero();
         switch (startGameInput.getPlayerOneHero().getName()) {
@@ -104,13 +111,27 @@ public class GameManager {
     public void startGame(ArrayList<ActionsInput> actions, ArrayNode output) {
 
         currentPlayer = startingPlayer;
-        // int enemyPlayer = Math.abs(startingPlayer - 1);
+        // get first card for both players
+        hands.add(new ArrayList<Card>() {
+            {
+                add(gameDecks.get(0).get(0));
+            }
+        });
+        gameDecks.get(0).remove(0);
+        hands.add(new ArrayList<Card>() {
+            {
+                add(gameDecks.get(1).get(0));
+            }
+        });
+        gameDecks.get(1).remove(0);
 
         for (ActionsInput action : actions) {
 
             switch (action.getCommand()) {
                 case "endPlayerTurn":
 // add reset stats like hasAttacked and isFrozen to false
+                    hands.get(currentPlayer).add(gameDecks.get(currentPlayer).get(0));
+                    //gameDecks.get(currentPlayer).remove(0);
                     // both players ended their turn
                     if (currentPlayer != startingPlayer) {
                         currentMana = currentMana + 1;
