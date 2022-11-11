@@ -36,16 +36,19 @@ public class Minion extends Card {
         this.frontLiner = frontLiner;
         this.isTank = isTank;
     }
+    public Minion() {
+        super();
+    }
 
-    public Minion(Minion card) {
-        super(card);
-        this.attackDamage = card.attackDamage;
-        this.health = card.health;
-        this.hasAttacked = card.hasAttacked;
-        this.isFrozen = card.isFrozen;
-        this.hasAbility = card.hasAbility;
-        this.frontLiner = card.frontLiner;
-        this.isTank = card.isTank;
+    public Minion(Minion minion) {
+        super(minion);
+        this.attackDamage = minion.attackDamage;
+        this.health = minion.health;
+        this.hasAttacked = minion.hasAttacked;
+        this.isFrozen = minion.isFrozen;
+        this.hasAbility = minion.hasAbility;
+        this.frontLiner = minion.frontLiner;
+        this.isTank = minion.isTank;
     }
 
 }

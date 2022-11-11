@@ -12,6 +12,13 @@ public class Environment extends Card {
     public Environment(CardInput cardInput) {
         super(cardInput, true, false);
     }
+    public Environment(Card card) {
+        super(card);
+    }
+
+    public Environment(){
+        super();
+    }
     public void Action(ArrayList<ArrayList<Minion>> board, int affectedRow) {}
 
     public void houndAction(ArrayList<ArrayList<Minion>> board, int affectedRow) {}

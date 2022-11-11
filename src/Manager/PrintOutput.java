@@ -1,12 +1,17 @@
 package Manager;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import fileio.Coordinates;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrintOutput {
 
 
     public String command = null;
+
+    public Coordinates cardAttacker = null;
+
+    public Coordinates cardAttacked = null;
 
     public Integer playerIdx = null;
 
@@ -35,5 +40,12 @@ public class PrintOutput {
         this.error = error;
         this.handIdx = handIdx;
         this.affectedRow = affectedRow;
+    }
+
+    public PrintOutput(String command, Coordinates cardAttacker, Coordinates cardAttacked, String error) {
+        this.command = command;
+        this.cardAttacker = cardAttacker;
+        this.cardAttacked = cardAttacked;
+        this.error = error;
     }
 }

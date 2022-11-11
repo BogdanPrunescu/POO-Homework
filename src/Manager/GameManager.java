@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.*;
 import fileio_copy.*;
 import Minions.*;
-import org.xml.sax.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -110,6 +109,8 @@ public class GameManager {
         shuffle(gameDecks.get(0), new Random(startGameInput.getShuffleSeed()));
         shuffle(gameDecks.get(1), new Random(startGameInput.getShuffleSeed()));
 
+        System.out.println("Starting Decks:" + gameDecks);
+
         CardInput hero = startGameInput.getPlayerOneHero();
         switch (startGameInput.getPlayerOneHero().getName()) {
             case "Lord Royce" -> heroes.add(new LordRoyce(hero));
@@ -143,24 +144,27 @@ public class GameManager {
         mana[1] = currentRoundMana;
 
         for (ActionsInput action : actions) {
-            // System.out.println(hands);
-            // System.out.println(board);
-            // System.out.println(action.getCommand());
+            //System.out.println("---HANDS AND BOARD STATUS---");
+            //System.out.println(hands);
+            //System.out.println(board);
+            //System.out.println("----------------------------");
+            //System.out.println(action.getCommand());
             switch (action.getCommand()) {
                 case "endPlayerTurn":
+                    System.out.println("Ended turn for player " + (currentPlayer + 1));
                     // both players ended their turn
                     if (currentPlayer != startingPlayer) {
                         currentRoundMana = Math.min(currentRoundMana + 1, 10);
                         mana[0] = mana[0] + currentRoundMana;
                         mana[1] = mana[1] + currentRoundMana;
 
-                        resetMinionstates();
                         hands.get(0).add(gameDecks.get(0).get(0));
                         gameDecks.get(0).remove(0);
 
                         hands.get(1).add(gameDecks.get(1).get(0));
                         gameDecks.get(1).remove(0);
                     }
+                    resetMinionStatesForPlayer(currentPlayer);
                     currentPlayer = Math.abs(currentPlayer - 1);
                     break;
 
@@ -169,10 +173,10 @@ public class GameManager {
                     Card card = hands.get(currentPlayer).get(action.getHandIdx());
                     if (!card.isMinion) {
                         PrintError(action, output, "Cannot place environment card on table.",
-                                action.getPlayerIdx(), null, null);
+                                null, action.getPlayerIdx(), null);
                     } else if (card.mana > mana[currentPlayer]) {
                         PrintError(action, output, "Not enough mana to place card on table.",
-                                action.getPlayerIdx(), null, null);
+                                null, action.getPlayerIdx(), null);
                     } else {
 
                         if (((Minion) card).isTank) {
@@ -184,7 +188,7 @@ public class GameManager {
                                 if (board.get(1).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
                                     PrintError(action, output, "Cannot place card on table since row is full.",
-                                            action.getPlayerIdx(), null, null);
+                                            null, action.getPlayerIdx(), null);
                                 } else {
                                     board.get(1).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -193,7 +197,7 @@ public class GameManager {
                             } else if (currentPlayer == 0){
                                 if (board.get(2).size() == maxCardsRow) {
                                     PrintError(action, output, "Cannot place card on table since row is full.",
-                                            action.getPlayerIdx(), null, null);
+                                            null, action.getPlayerIdx(), null);
                                 } else {
                                     board.get(2).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -204,7 +208,7 @@ public class GameManager {
                             if (currentPlayer == 1) {
                                 if (board.get(0).size() == maxCardsRow) {
                                     PrintError(action, output, "Cannot place card on table since row is full.",
-                                            action.getPlayerIdx(), null, null);
+                                            null, action.getPlayerIdx(), null);
                                 } else {
                                     board.get(0).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -214,7 +218,7 @@ public class GameManager {
                                 if (board.get(3).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
                                     PrintError(action, output, "Cannot place card on table since row is full.",
-                                            action.getPlayerIdx(), null, null);
+                                            null, action.getPlayerIdx(), null);
                                 } else {
                                     board.get(3).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -227,40 +231,51 @@ public class GameManager {
                 case "cardUsesAttack":
                     Coordinates attackerCard = action.getCardAttacker();
                     Coordinates attackedCard = action.getCardAttacked();
-                    Minion attackerMinion = board.get(attackerCard.getX()).get(attackedCard.getY());
+                    Minion attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
                     Minion attackedMinion = board.get(attackedCard.getX()).get(attackedCard.getY());
 
-                    if (GameExceptions.TestforMinionstate(attackerMinion) != INVALID_CASE) {
+                    System.out.println(attackerMinion.hasAttacked + " " + currentPlayer);
+                    if (attackerMinion.isFrozen) {
+                        PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacker card is frozen.");
+                        output.addPOJO(printOutput);
+                    } else if (attackerMinion.hasAttacked) {
+                        PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacker card has already attacked this turn.");
+                        output.addPOJO(printOutput);
                     } else {
-                        boolean ownerisEnemy = isCurrentPlayersCard(attackedCard, currentPlayer);
-                        if (ownerisEnemy) {
+                        if (currentPlayer == 0) {
                             // Attacked card does not belong to the enemy.
-                            if (attackedCard.getX() >= 2) {
-
+                            if (attackedCard.getX() >= 2 && attackerCard.getX() >= 2) {
+                                PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacked card does not belong to the enemy.");
+                                output.addPOJO(printOutput);
                             } else {
                                 // Attacked card is not of type 'Tank’.
                                 if (playerHasTank.get(1) == 1 && !attackedMinion.isTank) {
-
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacked card is not of type 'Tank'.");
+                                    output.addPOJO(printOutput);
                                 } else {
-                                    attackedMinion.health = attackedMinion.health - attackerMinion.health;
+                                    attackedMinion.health = attackedMinion.health - attackerMinion.attackDamage;
                                     if (attackedMinion.health <= 0) {
                                         board.get(attackedCard.getX()).remove(attackedCard.getY());
                                     }
+                                    attackerMinion.hasAttacked = true;
                                 }
                             }
                         } else {
                             // Attacked card does not belong to the enemy.
-                            if (attackedCard.getX() < 2) {
-
+                            if (attackedCard.getX() < 2 && attackerCard.getX() < 2) {
+                                PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacked card does not belong to the enemy.");
+                                output.addPOJO(printOutput);
                             } else {
                                 // Attacked card is not of type 'Tank’.
                                 if (playerHasTank.get(0) == 1 && !attackedMinion.isTank) {
-
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacked card is not of type 'Tank'.");
+                                    output.addPOJO(printOutput);
                                 } else {
-                                    attackedMinion.health = attackedMinion.health - attackerMinion.health;
+                                    attackedMinion.health = attackedMinion.health - attackerMinion.attackDamage;
                                     if (attackedMinion.health <= 0) {
                                         board.get(attackedCard.getX()).remove(attackedCard.getY());
                                     }
+                                    attackerMinion.hasAttacked = true;
                                 }
                             }
                         }
@@ -269,21 +284,80 @@ public class GameManager {
                 case "cardUsesAbility":
                     attackerCard = action.getCardAttacker();
                     attackedCard = action.getCardAttacked();
-                    attackerMinion = board.get(attackerCard.getX()).get(attackedCard.getY());
+                    attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
                     attackedMinion = board.get(attackedCard.getX()).get(attackedCard.getY());
-
                     // Attacker card is frozen.
                     if (attackerMinion.isFrozen) {
-
+                        PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacker card is frozen.");
+                        output.addPOJO(printOutput);
                         // Attacker card has already attacked this turn.
                     } else if (attackerMinion.hasAttacked) {
-
+                        PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacker card has already attacked this turn.");
+                        output.addPOJO(printOutput);
                     } else {
+                        if (attackerMinion.name.equals("Disciple")) {
+                            if (currentPlayer == 0) {
+                                if (attackedCard.getX() < 2) {
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card does not belong to the current player.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    attackerMinion.Action(board, attackedCard);
+                                    attackerMinion.hasAttacked = true;
+                                    System.out.println("Succes!");
+                                }
+                            } else {
+                                if (attackedCard.getX() >= 2) {
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card does not belong to the current player.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    attackerMinion.Action(board, attackedCard);
+                                    attackerMinion.hasAttacked = true;
+                                    System.out.println("Succes!");
+                                }
+                            }
+                        } else {
+                            if (currentPlayer == 0) {
+                                if (attackedCard.getX() >= 2) {
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card does not belong to the enemy.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    if (playerHasTanks(1) && !attackedMinion.isTank) {
+                                        PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card is not of type 'Tank'.");
+                                        output.addPOJO(printOutput);
+                                    } else {
+                                        attackerMinion.Action(board, attackedCard);
+                                        attackerMinion.hasAttacked = true;
+                                        if (attackedMinion.health <= 0) {
+                                            board.get(attackedCard.getX()).remove(attackedCard.getY());
+                                        }
+                                        System.out.println("Succes!");
+                                    }
+                                }
+                            } else {
+                                if (attackedCard.getX() < 2) {
+                                    PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card does not belong to the enemy.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    if (playerHasTanks(0) && !attackedMinion.isTank) {
+                                        PrintOutput printOutput = new PrintOutput("cardUsesAbility", attackerCard, attackedCard, "Attacked card is not of type 'Tank'.");
+                                        output.addPOJO(printOutput);
+                                    } else {
+                                        attackerMinion.Action(board, attackedCard);
+                                        attackerMinion.hasAttacked = true;
+                                        if (attackedMinion.health <= 0) {
+                                            board.get(attackedCard.getX()).remove(attackedCard.getY());
+                                        }
+                                        System.out.println("Succes!");
+                                    }
+                                }
+                            }
+                        }
 
                     }
                     break;
                 case "useEnvironmentCard" :
                     card = hands.get(currentPlayer).get(action.getHandIdx());
+                    System.out.println("Player " + currentPlayer + " used " + card.getName());
                     if (!card.isEnvironment) {
                         PrintError(action, output, "Chosen card is not of type environment.", null, action.getHandIdx(), action.getAffectedRow());
                     } else if (card.mana > mana[currentPlayer]) {
@@ -301,12 +375,16 @@ public class GameManager {
 
                                         hands.get(currentPlayer).remove(action.getHandIdx());
                                         mana[currentPlayer] = mana[currentPlayer] - card.mana;
+
+                                        System.out.println("Succes!");
                                     }
                                 } else {
                                     ((Environment) card).Action(board, action.getAffectedRow());
 
                                     hands.get(currentPlayer).remove(action.getHandIdx());
                                     mana[currentPlayer] = mana[currentPlayer] - card.mana;
+
+                                    System.out.println("Succes!");
                                 }
                             }
                         } else if (currentPlayer == 0){
@@ -321,12 +399,16 @@ public class GameManager {
 
                                         hands.get(currentPlayer).remove(action.getHandIdx());
                                         mana[currentPlayer] = mana[currentPlayer] - card.mana;
+
+                                        System.out.println("Succes!");
                                     }
                                 } else {
                                     ((Environment) card).Action(board, action.getAffectedRow());
 
                                     hands.get(currentPlayer).remove(action.getHandIdx());
                                     mana[currentPlayer] = mana[currentPlayer] - card.mana;
+
+                                    System.out.println("Succes!");
                                 }
                             }
                         }
@@ -337,31 +419,42 @@ public class GameManager {
         }
     }
 
-    /*
-    If the card belongs to the player return true, else return false
-    */
-    public boolean isCurrentPlayersCard(Coordinates cardCoords, int Player) {
-        if (Player == 1) {
-            if (cardCoords.getX() >= 2) {
-                return true;
-            } else return false;
+    public void resetMinionStatesForPlayer(int currentPlayer) {
+        if (currentPlayer == 0) {
+            for (int i = 2; i < 4; i++) {
+                for (Minion minion : board.get(i)) {
+                    minion.isFrozen = false;
+                    minion.hasAttacked = false;
+                }
+            }
         } else {
-            if (cardCoords.getX() < 2) {
-                return true;
-            } else return false;
-        }
-    }
-
-    public void resetMinionstates() {
-        for (int i = 0; i < 3; i++) {
-            for (Minion minion : board.get(i)) {
-                minion.isFrozen = false;
-                minion.hasAttacked = false;
+            for (int i = 0; i < 2; i++) {
+                for (Minion minion : board.get(i)) {
+                    minion.isFrozen = false;
+                    minion.hasAttacked = false;
+                }
             }
         }
     }
 
-    public void PrintError(ActionsInput action, ArrayNode output, String error, Integer playerIdx, Integer handIdx, Integer affectedRow) {
+    public boolean playerHasTanks(int Player) {
+        if (Player == 0) {
+            for (Minion cards : board.get(2)) {
+                if (cards.isTank) {
+                    return true;
+                }
+            }
+        } else {
+            for (Minion cards : board.get(1)) {
+                if (cards.isTank) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void PrintError(ActionsInput action, ArrayNode output, String error, Integer playerIdx, Integer handIdx, Integer affectedRow) {
         PrintOutput printOutput = new PrintOutput(action.getCommand(), playerIdx, handIdx, affectedRow, error);
         output.addPOJO(printOutput);
     }

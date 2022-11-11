@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public abstract class Card {
 
     public int mana;
-    private String description;
-    private ArrayList<String> colors;
-    private String name;
+    public String description;
+    public ArrayList<String> colors;
+    public String name;
     @JsonIgnore
     public boolean isEnvironment;
     @JsonIgnore
@@ -25,13 +25,15 @@ public abstract class Card {
         this.isMinion = isMinion;
     }
 
+    public Card() {}
+
     public Card(Card card) {
-        this.description = card.getDescription();
-        this.colors = card.getColors();
-        this.name = card.getName();
         this.mana = card.mana;
-        this.isEnvironment = card.isEnvironment;
+        this.colors = card.colors;
         this.isMinion = card.isMinion;
+        this.isEnvironment = card.isEnvironment;
+        this.description = card.description;
+        this.name = card.name;
     }
 
     public String getDescription() {

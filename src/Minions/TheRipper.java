@@ -15,6 +15,6 @@ public class TheRipper extends Minion{
     // Weak Knees
     @Override
     public void Action(ArrayList<ArrayList<Minion>> board, Coordinates target) {
-        board.get(target.getX()).get(target.getY()).attackDamage = board.get(target.getX()).get(target.getY()).attackDamage - 2;
+        board.get(target.getX()).get(target.getY()).attackDamage = Math.max(board.get(target.getX()).get(target.getY()).attackDamage - 2, 0);
     }
 }

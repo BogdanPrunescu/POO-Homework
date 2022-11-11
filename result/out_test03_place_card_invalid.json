@@ -44,11 +44,11 @@
   "output" : 2
 }, {
   "command" : "placeCard",
-  "playerIdx" : 0,
+  "handIdx" : 0,
   "error" : "Cannot place environment card on table."
 }, {
   "command" : "placeCard",
-  "playerIdx" : 0,
+  "handIdx" : 0,
   "error" : "Not enough mana to place card on table."
 }, {
   "command" : "getCardsInHand",
@@ -96,15 +96,15 @@
   "output" : 2
 }, {
   "command" : "placeCard",
-  "playerIdx" : 0,
+  "handIdx" : 0,
   "error" : "Not enough mana to place card on table."
 }, {
   "command" : "placeCard",
-  "playerIdx" : 0,
+  "handIdx" : 0,
   "error" : "Cannot place environment card on table."
 }, {
   "command" : "placeCard",
-  "playerIdx" : 0,
+  "handIdx" : 0,
   "error" : "Cannot place card on table since row is full."
 }, {
   "command" : "getPlayerMana",

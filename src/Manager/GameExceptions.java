@@ -9,6 +9,7 @@ public class GameExceptions {
     public static int TestforMinionstate(Minion minion) {
         if (minion.isFrozen) {
             // Attacker card is frozen.
+
             return -1;
         } else if (minion.hasAttacked) {
             // Attacker card has already attacked this turn.

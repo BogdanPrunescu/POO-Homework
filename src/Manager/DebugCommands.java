@@ -1,8 +1,10 @@
 package Manager;
 
-import Minions.Minion;
+import Environment.*;
+import Minions.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
+import fileio.CardInput;
 import fileio_copy.Card;
 
 import java.util.ArrayList;
@@ -35,7 +37,16 @@ public class DebugCommands {
                 break;
             case "getCardsInHand":
                 targetPlayer = action.getPlayerIdx();
-                cardArrayList = new ArrayList<>(GameManager.instance.hands.get(action.getPlayerIdx() - 1));
+                cardArrayList = new ArrayList<>();
+                for (Card cards : GameManager.instance.hands.get(action.getPlayerIdx() - 1)) {
+                    if (cards.isMinion) {
+                        card = new Minion((Minion) cards);
+                        cardArrayList.add(card);
+                    } else {
+                        card = new Environment((Environment) cards);
+                        cardArrayList.add(card);
+                    }
+                }
                 printOutput = new PrintOutput("getCardsInHand", targetPlayer, cardArrayList);
                 output.addPOJO(printOutput);
                 break;
@@ -46,8 +57,7 @@ public class DebugCommands {
                 output.addPOJO(printOutput);
                 break;
             case "getCardsOnTable":
-                ArrayList<ArrayList<Minion>> board_copy = new ArrayList<>();
-                copy_board(GameManager.instance.board, board_copy);
+                ArrayList<ArrayList<Minion>> board_copy = copy_board(GameManager.instance.board);
                 printOutput = new PrintOutput("getCardsOnTable", board_copy);
                 output.addPOJO(printOutput);
                 break;
@@ -71,7 +81,7 @@ public class DebugCommands {
                 cardArrayList = new ArrayList<>();
                 for (ArrayList<Minion> rows : GameManager.instance.board) {
                     for (Minion minion : rows) {
-                        if (minion.isFrozen == true) {
+                        if (minion.isFrozen) {
                             cardArrayList.add(minion);
                         }
                     }
@@ -83,13 +93,16 @@ public class DebugCommands {
         }
     }
 
-    public static void copy_board(ArrayList<ArrayList<Minion>> src, ArrayList<ArrayList<Minion>> dest) {
+    public static ArrayList<ArrayList<Minion>> copy_board(ArrayList<ArrayList<Minion>> src) {
 
-        int idx = 0;
+        ArrayList dest = new ArrayList<>();
         for (ArrayList<Minion> rows : src) {
-            dest.add(new ArrayList<Minion>());
-            dest.get(idx).addAll(src.get(idx));
-            idx++;
+            ArrayList<Minion> tmp = new ArrayList<>();
+            for (Minion minion : rows) {
+                tmp.add(new Minion(minion));
+            }
+            dest.add(tmp);
         }
+        return dest;
     }
 }
