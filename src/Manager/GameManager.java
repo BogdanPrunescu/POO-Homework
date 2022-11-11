@@ -9,10 +9,10 @@ import fileio.*;
 import fileio_copy.*;
 import Minions.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static java.util.Collections.min;
 import static java.util.Collections.shuffle;
 
 public class GameManager {
@@ -30,15 +30,34 @@ public class GameManager {
 
     ArrayList<ArrayList<Card>> gameDecks = new ArrayList<>();
     ArrayList<Card> heroes = new ArrayList<>();
-    int currentMana = 0;
+    ArrayList<ArrayList<Minion>> board = new ArrayList<>() {
+        {
+            add(new ArrayList<Minion>());
+            add(new ArrayList<Minion>());
+            add(new ArrayList<Minion>());
+            add(new ArrayList<Minion>());
+        }
+    };
+    ArrayList<Integer> playerHasTank = new ArrayList<>() {
+        {
+            add(0);
+            add(0);
+        }
+    };
 
-    ArrayList<ArrayList<Minion>> board = new ArrayList<>();
-    ArrayList<Integer> playerHasTank = new ArrayList<>();
+    ArrayList<ArrayList<Card>> hands = new ArrayList<>() {
+        {
+            add(new ArrayList<Card>());
+            add(new ArrayList<Card>());
+        }
+    };
 
-    ArrayList<ArrayList<Card>> hands = new ArrayList<>();
+    int[] mana = new int[]{0, 0};
     int startingPlayer;
 
     int currentPlayer;
+
+    int currentRoundMana = 0;
 
     public void prepareGame(StartGameInput startGameInput, DecksInput playerOneDecks,
                                    DecksInput playerTwoDecks, ArrayNode output) {
@@ -105,50 +124,48 @@ public class GameManager {
             case "General Kocioraw" -> heroes.add(new GeneralKocioraw(hero));
         }
 
-        currentMana = 1;
+        currentRoundMana = 1;
     }
 
     public void startGame(ArrayList<ActionsInput> actions, ArrayNode output) {
 
         currentPlayer = startingPlayer;
         // get first card for both players
-        hands.add(new ArrayList<Card>() {
-            {
-                add(gameDecks.get(0).get(0));
-            }
-        });
+        hands.get(0).add(gameDecks.get(0).get(0));
         gameDecks.get(0).remove(0);
-        hands.add(new ArrayList<Card>() {
-            {
-                add(gameDecks.get(1).get(0));
-            }
-        });
+
+        hands.get(1).add(gameDecks.get(1).get(0));
         gameDecks.get(1).remove(0);
+
+        mana[0] = currentRoundMana;
+        mana[1] = currentRoundMana;
 
         for (ActionsInput action : actions) {
 
             switch (action.getCommand()) {
                 case "endPlayerTurn":
-// add reset stats like hasAttacked and isFrozen to false
-                    hands.get(currentPlayer).add(gameDecks.get(currentPlayer).get(0));
-                    //gameDecks.get(currentPlayer).remove(0);
                     // both players ended their turn
                     if (currentPlayer != startingPlayer) {
-                        currentMana = currentMana + 1;
-                        heroes.get(0).mana = Math.max(10, heroes.get(0).mana + currentMana);
-                        heroes.get(1).mana = Math.max(10, heroes.get(1).mana + currentMana);
+                        currentRoundMana = Math.min(currentRoundMana + 1, 10);
+                        mana[0] = mana[0] + currentRoundMana;
+                        mana[1] = mana[1] + currentRoundMana;
+
+                        resetMinionstates();
+                        hands.get(0).add(gameDecks.get(0).get(0));
+                        gameDecks.get(0).remove(0);
+
+                        hands.get(1).add(gameDecks.get(1).get(0));
+                        gameDecks.get(1).remove(0);
                     }
-                    if (currentPlayer == 0)
-                        currentPlayer = 1;
-                    else currentPlayer = 0;
+                    currentPlayer = Math.abs(currentPlayer - 1);
                     break;
 
  // !!!!! este foarte prost. trebuie fragmentat !!!!!
                 case "placeCard":
-                    Card card = gameDecks.get(currentPlayer).get(action.getHandIdx());
-                    if (!card.isEnvironment) {
+                    Card card = hands.get(currentPlayer).get(action.getHandIdx());
+                    if (!card.isMinion) {
                         // Cannot place environment card on table.
-                    } else if (card.mana > heroes.get(currentPlayer).mana) {
+                    } else if (card.mana > mana[currentPlayer]) {
                         // Not enough mana to place card on table.
                     } else {
 
@@ -162,12 +179,16 @@ public class GameManager {
                                     // Cannot place card on table since row is full.
                                 } else {
                                     board.get(1).add((Minion) card);
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
                                 }
                             } else if (currentPlayer == 0){
                                 if (board.get(2).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
                                 } else {
                                     board.get(2).add((Minion) card);
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
                                 }
                             }
                         } else {
@@ -176,12 +197,16 @@ public class GameManager {
                                     // Cannot place card on table since row is full.
                                 } else {
                                     board.get(0).add((Minion) card);
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
                                 }
                             } else if (currentPlayer == 0){
                                 if (board.get(3).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
                                 } else {
                                     board.get(3).add((Minion) card);
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
                                 }
                             }
                         }
@@ -263,6 +288,15 @@ public class GameManager {
             if (cardCoords.getX() < 2) {
                 return true;
             } else return false;
+        }
+    }
+
+    public void resetMinionstates() {
+        for (int i = 0; i < 3; i++) {
+            for (Minion minion : board.get(i)) {
+                minion.isFrozen = false;
+                minion.hasAttacked = false;
+            }
         }
     }
 }

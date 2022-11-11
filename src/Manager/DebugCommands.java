@@ -12,12 +12,13 @@ public class DebugCommands {
 
         Card hero;
         PrintOutput printOutput;
-        ArrayList<Card> deck;
+        ArrayList<Card> cardArrayList;
+        int targetPlayer;
 
         switch (action.getCommand()) {
             case "getPlayerDeck":
-                deck = GameManager.instance.gameDecks.get(action.getPlayerIdx() - 1);
-                printOutput = new PrintOutput("getPlayerDeck", action.getPlayerIdx(), deck);
+                cardArrayList = (ArrayList<Card>) GameManager.instance.gameDecks.get(action.getPlayerIdx() - 1).clone();
+                printOutput = new PrintOutput("getPlayerDeck", action.getPlayerIdx(), cardArrayList);
                 output.addPOJO(printOutput);
                 break;
             case "getPlayerHero":
@@ -31,6 +32,22 @@ public class DebugCommands {
                 printOutput = new PrintOutput("getPlayerTurn", playerTurn + 1);
                 output.addPOJO(printOutput);
                 break;
+            case "getCardsInHand":
+                targetPlayer = action.getPlayerIdx();
+                cardArrayList = (ArrayList<Card>) GameManager.instance.hands.get(action.getPlayerIdx() - 1).clone();
+                printOutput = new PrintOutput("getCardsInHand", targetPlayer, cardArrayList);
+                output.addPOJO(printOutput);
+                break;
+            case "getPlayerMana":
+                targetPlayer = action.getPlayerIdx();
+                int mana = GameManager.instance.mana[targetPlayer - 1];
+                printOutput = new PrintOutput("getPlayerMana", targetPlayer, mana);
+                output.addPOJO(printOutput);
+                break;
+            case "getCardsOnTable":
+                ArrayList<ArrayList<Card>> board_copy = (ArrayList<ArrayList<Card>>) GameManager.getInstance().board.clone();
+                printOutput = new PrintOutput("getCardsOnTable", board_copy);
+                output.addPOJO(printOutput);
         }
     }
 }

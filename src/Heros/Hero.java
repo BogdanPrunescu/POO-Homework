@@ -13,6 +13,10 @@ public class Hero extends Card {
 
     public int health = 30;
 
+    public void setPlayingMana(int playingMana) {
+        this.playingMana = playingMana;
+    }
+
     @JsonIgnore
     public int playingMana;
 

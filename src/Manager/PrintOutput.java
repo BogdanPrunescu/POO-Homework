@@ -12,6 +12,8 @@ public class PrintOutput {
 
     public Object output = null;
 
+    public String error = null;
+
     public PrintOutput(String command, int playerIdx, Object output) {
         this.command = command;
         this.playerIdx = playerIdx;
@@ -22,4 +24,12 @@ public class PrintOutput {
         this.command = command;
         this.output = output;
     }
+
+    /*
+    public PrintOutput(String command, int playerIdx, String error) {
+        this.command = command;
+        this.playerIdx = playerIdx;
+        this.error = error;
+    }
+     */
 }
