@@ -14,9 +14,19 @@ public class HeardHound extends Environment{
 
     // don't forget to check if there is space to add the minion to player's row
     @Override
-    public void houndAction(ArrayList<ArrayList<Minion>> board, Coordinates target) {
-        Minion enemyMinion = board.get(target.getX()).get(target.getY());
-        board.get(3 - target.getX()).add(enemyMinion);
-        board.get(target.getX()).remove(target.getY());
+    public void houndAction(ArrayList<ArrayList<Minion>> board, int affectedRow) {
+        int maxHealth = -1;
+        int maxHPMinionIdx = -1;
+        int idx = 0;
+        for (Minion minion : board.get(affectedRow)) {
+            if (minion.health > maxHealth) {
+                maxHealth = minion.health;
+                maxHPMinionIdx = idx;
+            }
+            idx++;
+        }
+
+        board.get(3 - affectedRow).add(board.get(affectedRow).get(maxHPMinionIdx));
+        board.get(affectedRow).remove(maxHPMinionIdx);
     }
 }

@@ -5,10 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrintOutput {
 
+
     public String command = null;
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    public int playerIdx = 0;
+    public Integer playerIdx = null;
+
+    public Integer handIdx = null;
+
+    public Integer affectedRow = null;
 
     public Object output = null;
 
@@ -25,11 +29,11 @@ public class PrintOutput {
         this.output = output;
     }
 
-    /*
-    public PrintOutput(String command, int playerIdx, String error) {
+    public PrintOutput(String command, Integer playerIdx, Integer handIdx, Integer affectedRow, String error) {
         this.command = command;
         this.playerIdx = playerIdx;
         this.error = error;
+        this.handIdx = handIdx;
+        this.affectedRow = affectedRow;
     }
-     */
 }

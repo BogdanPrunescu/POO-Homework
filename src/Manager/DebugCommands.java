@@ -1,5 +1,6 @@
 package Manager;
 
+import Minions.Minion;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio_copy.Card;
@@ -10,20 +11,20 @@ public class DebugCommands {
 
     public static void printOutput(ActionsInput action, ArrayNode output) {
 
-        Card hero;
+        Card card;
         PrintOutput printOutput;
         ArrayList<Card> cardArrayList;
         int targetPlayer;
 
         switch (action.getCommand()) {
             case "getPlayerDeck":
-                cardArrayList = (ArrayList<Card>) GameManager.instance.gameDecks.get(action.getPlayerIdx() - 1).clone();
+                cardArrayList = new ArrayList<>(GameManager.instance.gameDecks.get(action.getPlayerIdx() - 1));
                 printOutput = new PrintOutput("getPlayerDeck", action.getPlayerIdx(), cardArrayList);
                 output.addPOJO(printOutput);
                 break;
             case "getPlayerHero":
-                hero = GameManager.instance.heroes.get(action.getPlayerIdx() - 1);
-                printOutput = new PrintOutput("getPlayerHero", action.getPlayerIdx(), hero);
+                card = GameManager.instance.heroes.get(action.getPlayerIdx() - 1);
+                printOutput = new PrintOutput("getPlayerHero", action.getPlayerIdx(), card);
                 output.addPOJO(printOutput);
                 break;
 
@@ -34,7 +35,7 @@ public class DebugCommands {
                 break;
             case "getCardsInHand":
                 targetPlayer = action.getPlayerIdx();
-                cardArrayList = (ArrayList<Card>) GameManager.instance.hands.get(action.getPlayerIdx() - 1).clone();
+                cardArrayList = new ArrayList<>(GameManager.instance.hands.get(action.getPlayerIdx() - 1));
                 printOutput = new PrintOutput("getCardsInHand", targetPlayer, cardArrayList);
                 output.addPOJO(printOutput);
                 break;
@@ -45,9 +46,50 @@ public class DebugCommands {
                 output.addPOJO(printOutput);
                 break;
             case "getCardsOnTable":
-                ArrayList<ArrayList<Card>> board_copy = (ArrayList<ArrayList<Card>>) GameManager.getInstance().board.clone();
+                ArrayList<ArrayList<Minion>> board_copy = new ArrayList<>();
+                copy_board(GameManager.instance.board, board_copy);
                 printOutput = new PrintOutput("getCardsOnTable", board_copy);
                 output.addPOJO(printOutput);
+                break;
+            case "getEnvironmentCardsInHand":
+                cardArrayList = new ArrayList<>();
+                ArrayList<Card> hand = GameManager.instance.hands.get(action.getPlayerIdx() - 1);
+                for (Card cards : hand) {
+                    if (cards.isEnvironment) {
+                        cardArrayList.add(cards);
+                    }
+                }
+                printOutput = new PrintOutput("getEnvironmentCardsInHand", action.getPlayerIdx() , cardArrayList);
+                output.addPOJO(printOutput);
+                break;
+            case "getCardAtPosition":
+                card = new Minion(GameManager.instance.board.get(action.getX()).get(action.getY()));
+                printOutput = new PrintOutput("getCardAtPosition", card);
+                output.addPOJO(printOutput);
+                break;
+            case "getFrozenCardsOnTable":
+                cardArrayList = new ArrayList<>();
+                for (ArrayList<Minion> rows : GameManager.instance.board) {
+                    for (Minion minion : rows) {
+                        if (minion.isFrozen == true) {
+                            cardArrayList.add(minion);
+                        }
+                    }
+                }
+                printOutput = new PrintOutput("getFrozenCardsOnTable", cardArrayList);
+                output.addPOJO(printOutput);
+                break;
+
+        }
+    }
+
+    public static void copy_board(ArrayList<ArrayList<Minion>> src, ArrayList<ArrayList<Minion>> dest) {
+
+        int idx = 0;
+        for (ArrayList<Minion> rows : src) {
+            dest.add(new ArrayList<Minion>());
+            dest.get(idx).addAll(src.get(idx));
+            idx++;
         }
     }
 }

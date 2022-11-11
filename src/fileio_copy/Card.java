@@ -25,6 +25,15 @@ public abstract class Card {
         this.isMinion = isMinion;
     }
 
+    public Card(Card card) {
+        this.description = card.getDescription();
+        this.colors = card.getColors();
+        this.name = card.getName();
+        this.mana = card.mana;
+        this.isEnvironment = card.isEnvironment;
+        this.isMinion = card.isMinion;
+    }
+
     public String getDescription() {
         return description;
     }

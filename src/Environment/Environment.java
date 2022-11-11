@@ -14,5 +14,5 @@ public class Environment extends Card {
     }
     public void Action(ArrayList<ArrayList<Minion>> board, int affectedRow) {}
 
-    public void houndAction(ArrayList<ArrayList<Minion>> board, Coordinates target) {}
+    public void houndAction(ArrayList<ArrayList<Minion>> board, int affectedRow) {}
 }

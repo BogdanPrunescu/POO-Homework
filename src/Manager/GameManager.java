@@ -1,5 +1,6 @@
 package Manager;
 
+import Environment.Environment;
 import Environment.Firestorm;
 import Environment.HeardHound;
 import Environment.Winterfell;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.*;
 import fileio_copy.*;
 import Minions.*;
+import org.xml.sax.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -141,7 +143,9 @@ public class GameManager {
         mana[1] = currentRoundMana;
 
         for (ActionsInput action : actions) {
-
+            // System.out.println(hands);
+            // System.out.println(board);
+            // System.out.println(action.getCommand());
             switch (action.getCommand()) {
                 case "endPlayerTurn":
                     // both players ended their turn
@@ -164,9 +168,11 @@ public class GameManager {
                 case "placeCard":
                     Card card = hands.get(currentPlayer).get(action.getHandIdx());
                     if (!card.isMinion) {
-                        // Cannot place environment card on table.
+                        PrintError(action, output, "Cannot place environment card on table.",
+                                action.getPlayerIdx(), null, null);
                     } else if (card.mana > mana[currentPlayer]) {
-                        // Not enough mana to place card on table.
+                        PrintError(action, output, "Not enough mana to place card on table.",
+                                action.getPlayerIdx(), null, null);
                     } else {
 
                         if (((Minion) card).isTank) {
@@ -177,6 +183,8 @@ public class GameManager {
                             if (currentPlayer == 1) {
                                 if (board.get(1).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
+                                    PrintError(action, output, "Cannot place card on table since row is full.",
+                                            action.getPlayerIdx(), null, null);
                                 } else {
                                     board.get(1).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -184,7 +192,8 @@ public class GameManager {
                                 }
                             } else if (currentPlayer == 0){
                                 if (board.get(2).size() == maxCardsRow) {
-                                    // Cannot place card on table since row is full.
+                                    PrintError(action, output, "Cannot place card on table since row is full.",
+                                            action.getPlayerIdx(), null, null);
                                 } else {
                                     board.get(2).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -194,7 +203,8 @@ public class GameManager {
                         } else {
                             if (currentPlayer == 1) {
                                 if (board.get(0).size() == maxCardsRow) {
-                                    // Cannot place card on table since row is full.
+                                    PrintError(action, output, "Cannot place card on table since row is full.",
+                                            action.getPlayerIdx(), null, null);
                                 } else {
                                     board.get(0).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -203,6 +213,8 @@ public class GameManager {
                             } else if (currentPlayer == 0){
                                 if (board.get(3).size() == maxCardsRow) {
                                     // Cannot place card on table since row is full.
+                                    PrintError(action, output, "Cannot place card on table since row is full.",
+                                            action.getPlayerIdx(), null, null);
                                 } else {
                                     board.get(3).add((Minion) card);
                                     hands.get(currentPlayer).remove(action.getHandIdx());
@@ -270,6 +282,55 @@ public class GameManager {
 
                     }
                     break;
+                case "useEnvironmentCard" :
+                    card = hands.get(currentPlayer).get(action.getHandIdx());
+                    if (!card.isEnvironment) {
+                        PrintError(action, output, "Chosen card is not of type environment.", null, action.getHandIdx(), action.getAffectedRow());
+                    } else if (card.mana > mana[currentPlayer]) {
+                        PrintError(action, output, "Not enough mana to use environment card.", null, action.getHandIdx(), action.getAffectedRow());
+                    } else {
+                        if (currentPlayer == 1) {
+                            if (action.getAffectedRow() < 2) {
+                                PrintError(action, output, "Chosen row does not belong to the enemy.", null, action.getHandIdx(), action.getAffectedRow());
+                            } else {
+                                if (card.getName().equals("Heart Hound")) {
+                                    if (board.get(3 - action.getAffectedRow()).size() == 5) {
+                                        PrintError(action, output, "Cannot steal enemy card since the player's row is full.", null, action.getHandIdx(), action.getAffectedRow());
+                                    } else {
+                                        ((HeardHound) card).houndAction(board, action.getAffectedRow());
+
+                                        hands.get(currentPlayer).remove(action.getHandIdx());
+                                        mana[currentPlayer] = mana[currentPlayer] - card.mana;
+                                    }
+                                } else {
+                                    ((Environment) card).Action(board, action.getAffectedRow());
+
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
+                                }
+                            }
+                        } else if (currentPlayer == 0){
+                            if (action.getAffectedRow() >= 2) {
+                                PrintError(action, output, "Chosen row does not belong to the enemy.", null, action.getHandIdx(), action.getAffectedRow());
+                            } else {
+                                if (card.getName().equals("Heart Hound")) {
+                                    if (board.get(3 - action.getAffectedRow()).size() == 5) {
+                                        PrintError(action, output, "Cannot steal enemy card since the player's row is full.", null, action.getHandIdx(), action.getAffectedRow());
+                                    } else {
+                                        ((HeardHound) card).houndAction(board, action.getAffectedRow());
+
+                                        hands.get(currentPlayer).remove(action.getHandIdx());
+                                        mana[currentPlayer] = mana[currentPlayer] - card.mana;
+                                    }
+                                } else {
+                                    ((Environment) card).Action(board, action.getAffectedRow());
+
+                                    hands.get(currentPlayer).remove(action.getHandIdx());
+                                    mana[currentPlayer] = mana[currentPlayer] - card.mana;
+                                }
+                            }
+                        }
+                    }
                 default:
                 DebugCommands.printOutput(action, output);
             }
@@ -298,5 +359,10 @@ public class GameManager {
                 minion.hasAttacked = false;
             }
         }
+    }
+
+    public void PrintError(ActionsInput action, ArrayNode output, String error, Integer playerIdx, Integer handIdx, Integer affectedRow) {
+        PrintOutput printOutput = new PrintOutput(action.getCommand(), playerIdx, handIdx, affectedRow, error);
+        output.addPOJO(printOutput);
     }
 }

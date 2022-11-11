@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 
 @JsonPropertyOrder( {"mana", "attackDamage", "health", "description", "colors", "name"} )
-public abstract class Minion extends Card {
+public class Minion extends Card {
 
     public int attackDamage;
     public int health;
@@ -24,7 +24,7 @@ public abstract class Minion extends Card {
     public boolean frontLiner;
 
     @JsonIgnore
-    public boolean isTank = false;
+    public boolean isTank;
 
     public void Action(ArrayList<ArrayList<Minion>> board, Coordinates target) {}
 
@@ -36,4 +36,16 @@ public abstract class Minion extends Card {
         this.frontLiner = frontLiner;
         this.isTank = isTank;
     }
+
+    public Minion(Minion card) {
+        super(card);
+        this.attackDamage = card.attackDamage;
+        this.health = card.health;
+        this.hasAttacked = card.hasAttacked;
+        this.isFrozen = card.isFrozen;
+        this.hasAbility = card.hasAbility;
+        this.frontLiner = card.frontLiner;
+        this.isTank = card.isTank;
+    }
+
 }
