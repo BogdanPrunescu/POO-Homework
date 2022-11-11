@@ -30,7 +30,7 @@ public class GameManager {
     }
 
     ArrayList<ArrayList<Card>> gameDecks = new ArrayList<>();
-    ArrayList<Card> heroes = new ArrayList<>();
+    ArrayList<Hero> heroes = new ArrayList<>();
     ArrayList<ArrayList<Minion>> board = new ArrayList<>() {
         {
             add(new ArrayList<Minion>());
@@ -109,7 +109,7 @@ public class GameManager {
         shuffle(gameDecks.get(0), new Random(startGameInput.getShuffleSeed()));
         shuffle(gameDecks.get(1), new Random(startGameInput.getShuffleSeed()));
 
-        System.out.println("Starting Decks:" + gameDecks);
+        //System.out.println("Starting Decks:" + gameDecks);
 
         CardInput hero = startGameInput.getPlayerOneHero();
         switch (startGameInput.getPlayerOneHero().getName()) {
@@ -143,6 +143,9 @@ public class GameManager {
         mana[0] = currentRoundMana;
         mana[1] = currentRoundMana;
 
+        heroes.get(0).health = 30;
+        heroes.get(1).health = 30;
+
         for (ActionsInput action : actions) {
             //System.out.println("---HANDS AND BOARD STATUS---");
             //System.out.println(hands);
@@ -151,20 +154,26 @@ public class GameManager {
             //System.out.println(action.getCommand());
             switch (action.getCommand()) {
                 case "endPlayerTurn":
-                    System.out.println("Ended turn for player " + (currentPlayer + 1));
+                    //System.out.println("Ended turn for player " + (currentPlayer + 1));
                     // both players ended their turn
                     if (currentPlayer != startingPlayer) {
                         currentRoundMana = Math.min(currentRoundMana + 1, 10);
                         mana[0] = mana[0] + currentRoundMana;
                         mana[1] = mana[1] + currentRoundMana;
 
-                        hands.get(0).add(gameDecks.get(0).get(0));
-                        gameDecks.get(0).remove(0);
+                        if (gameDecks.get(0).size() != 0) {
+                            hands.get(0).add(gameDecks.get(0).get(0));
+                            gameDecks.get(0).remove(0);
+                        }
 
-                        hands.get(1).add(gameDecks.get(1).get(0));
-                        gameDecks.get(1).remove(0);
+                        if (gameDecks.get(1).size() != 0) {
+                            hands.get(1).add(gameDecks.get(1).get(0));
+                            gameDecks.get(1).remove(0);
+                        }
                     }
                     resetMinionStatesForPlayer(currentPlayer);
+                    heroes.get(0).hasAttacked = false;
+                    heroes.get(1).hasAttacked = false;
                     currentPlayer = Math.abs(currentPlayer - 1);
                     break;
 
@@ -234,7 +243,6 @@ public class GameManager {
                     Minion attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
                     Minion attackedMinion = board.get(attackedCard.getX()).get(attackedCard.getY());
 
-                    System.out.println(attackerMinion.hasAttacked + " " + currentPlayer);
                     if (attackerMinion.isFrozen) {
                         PrintOutput printOutput = new PrintOutput("cardUsesAttack", attackerCard, attackedCard, "Attacker card is frozen.");
                         output.addPOJO(printOutput);
@@ -303,7 +311,6 @@ public class GameManager {
                                 } else {
                                     attackerMinion.Action(board, attackedCard);
                                     attackerMinion.hasAttacked = true;
-                                    System.out.println("Succes!");
                                 }
                             } else {
                                 if (attackedCard.getX() >= 2) {
@@ -312,7 +319,6 @@ public class GameManager {
                                 } else {
                                     attackerMinion.Action(board, attackedCard);
                                     attackerMinion.hasAttacked = true;
-                                    System.out.println("Succes!");
                                 }
                             }
                         } else {
@@ -330,7 +336,6 @@ public class GameManager {
                                         if (attackedMinion.health <= 0) {
                                             board.get(attackedCard.getX()).remove(attackedCard.getY());
                                         }
-                                        System.out.println("Succes!");
                                     }
                                 }
                             } else {
@@ -347,7 +352,6 @@ public class GameManager {
                                         if (attackedMinion.health <= 0) {
                                             board.get(attackedCard.getX()).remove(attackedCard.getY());
                                         }
-                                        System.out.println("Succes!");
                                     }
                                 }
                             }
@@ -357,7 +361,6 @@ public class GameManager {
                     break;
                 case "useEnvironmentCard" :
                     card = hands.get(currentPlayer).get(action.getHandIdx());
-                    System.out.println("Player " + currentPlayer + " used " + card.getName());
                     if (!card.isEnvironment) {
                         PrintError(action, output, "Chosen card is not of type environment.", null, action.getHandIdx(), action.getAffectedRow());
                     } else if (card.mana > mana[currentPlayer]) {
@@ -376,7 +379,6 @@ public class GameManager {
                                         hands.get(currentPlayer).remove(action.getHandIdx());
                                         mana[currentPlayer] = mana[currentPlayer] - card.mana;
 
-                                        System.out.println("Succes!");
                                     }
                                 } else {
                                     ((Environment) card).Action(board, action.getAffectedRow());
@@ -384,7 +386,6 @@ public class GameManager {
                                     hands.get(currentPlayer).remove(action.getHandIdx());
                                     mana[currentPlayer] = mana[currentPlayer] - card.mana;
 
-                                    System.out.println("Succes!");
                                 }
                             }
                         } else if (currentPlayer == 0){
@@ -400,7 +401,6 @@ public class GameManager {
                                         hands.get(currentPlayer).remove(action.getHandIdx());
                                         mana[currentPlayer] = mana[currentPlayer] - card.mana;
 
-                                        System.out.println("Succes!");
                                     }
                                 } else {
                                     ((Environment) card).Action(board, action.getAffectedRow());
@@ -408,11 +408,109 @@ public class GameManager {
                                     hands.get(currentPlayer).remove(action.getHandIdx());
                                     mana[currentPlayer] = mana[currentPlayer] - card.mana;
 
-                                    System.out.println("Succes!");
                                 }
                             }
                         }
                     }
+                    break;
+                case "useAttackHero":
+                    attackerCard = action.getCardAttacker();
+                    attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
+
+                    if (attackerMinion.isFrozen) {
+                        PrintOutput printOutput = new PrintOutput("useAttackHero", attackerCard, null, "Attacker card is frozen.");
+                        output.addPOJO(printOutput);
+                    } else if (attackerMinion.hasAttacked) {
+                        PrintOutput printOutput = new PrintOutput("useAttackHero", attackerCard, null, "Attacker card has already attacked this turn.");
+                        output.addPOJO(printOutput);
+                    } else {
+                        if (currentPlayer == 0) {
+                            if (playerHasTanks(1)) {
+                                PrintOutput printOutput = new PrintOutput("useAttackHero", attackerCard, null, "Attacked card is not of type 'Tank'.");
+                                output.addPOJO(printOutput);
+                            } else {
+                                heroes.get(1).health = heroes.get(1).health - attackerMinion.attackDamage;
+                                attackerMinion.hasAttacked = true;
+                                if (heroes.get(1).health <= 0) {
+                                    PrintOutput printOutput = new PrintOutput("Player one killed the enemy hero.");
+                                    output.addPOJO(printOutput);
+                                    AppManager.instance.playerOneWins++;
+                                }
+                            }
+                        } else {
+                            if (playerHasTanks(0)) {
+                                PrintOutput printOutput = new PrintOutput("useAttackHero", attackerCard, null, "Attacked card is not of type 'Tank'.");
+                                output.addPOJO(printOutput);
+                            } else {
+                                heroes.get(0).health = heroes.get(0).health - attackerMinion.attackDamage;
+                                attackerMinion.hasAttacked = true;
+                                if (heroes.get(0).health <= 0) {
+                                    PrintOutput printOutput = new PrintOutput("Player two killed the enemy hero.");
+                                    output.addPOJO(printOutput);
+                                    AppManager.instance.playerTwoWins++;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "useHeroAbility":
+                    int affectedRow = action.getAffectedRow();
+                    if (mana[currentPlayer] < heroes.get(currentPlayer).mana) {
+                        // Not enough mana to use hero's ability.
+                        PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Not enough mana to use hero's ability.");
+                        output.addPOJO(printOutput);
+                    } else if (heroes.get(currentPlayer).hasAttacked){
+                        // Hero has already attacked this turn.
+                        PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Hero has already attacked this turn.");
+                        output.addPOJO(printOutput);
+                    } else {
+                        if (heroes.get(currentPlayer).name.equals("Lord Royce") || heroes.get(currentPlayer).name.equals("Empress Thorina")) {
+                            if (currentPlayer == 0) {
+                                if (affectedRow >= 2) {
+                                    // Selected row does not belong to the enemy.
+                                    PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Selected row does not belong to the enemy.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    heroes.get(currentPlayer).heroAction(board, affectedRow);
+                                    mana[currentPlayer] -= heroes.get(currentPlayer).mana;
+                                    heroes.get(currentPlayer).hasAttacked = true;
+                                }
+                            } else {
+                                if (affectedRow < 2) {
+                                    // Selected row does not belong to the enemy.
+                                    PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Selected row does not belong to the enemy.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    heroes.get(currentPlayer).heroAction(board, affectedRow);
+                                    mana[currentPlayer] -= heroes.get(currentPlayer).mana;
+                                    heroes.get(currentPlayer).hasAttacked = true;
+                                }
+                            }
+                        } else {
+                            if (currentPlayer == 0) {
+                                if (affectedRow < 2) {
+                                    // Selected row does not belong to the current player.
+                                    PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Selected row does not belong to the current player.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    heroes.get(currentPlayer).heroAction(board, affectedRow);
+                                    mana[currentPlayer] -= heroes.get(currentPlayer).mana;
+                                    heroes.get(currentPlayer).hasAttacked = true;
+                                }
+                            } else {
+                                if (affectedRow >= 2) {
+                                    // Selected row does not belong to the current player.
+                                    PrintOutput printOutput = new PrintOutput("useHeroAbility", null, null, affectedRow, "Selected row does not belong to the current player.");
+                                    output.addPOJO(printOutput);
+                                } else {
+                                    heroes.get(currentPlayer).heroAction(board, affectedRow);
+                                    mana[currentPlayer] -= heroes.get(currentPlayer).mana;
+                                    heroes.get(currentPlayer).hasAttacked = true;
+                                }
+                            }
+                        }
+                    }
+                    break;
                 default:
                 DebugCommands.printOutput(action, output);
             }

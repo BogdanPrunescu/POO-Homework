@@ -1,6 +1,7 @@
 package Manager;
 
 import Environment.*;
+import Heros.Hero;
 import Minions.*;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
@@ -25,7 +26,7 @@ public class DebugCommands {
                 output.addPOJO(printOutput);
                 break;
             case "getPlayerHero":
-                card = GameManager.instance.heroes.get(action.getPlayerIdx() - 1);
+                card = new Hero(GameManager.instance.heroes.get(action.getPlayerIdx() - 1));
                 printOutput = new PrintOutput("getPlayerHero", action.getPlayerIdx(), card);
                 output.addPOJO(printOutput);
                 break;
@@ -89,7 +90,19 @@ public class DebugCommands {
                 printOutput = new PrintOutput("getFrozenCardsOnTable", cardArrayList);
                 output.addPOJO(printOutput);
                 break;
-
+            case "getPlayerOneWins":
+                printOutput = new PrintOutput("getPlayerOneWins", AppManager.instance.playerOneWins);
+                output.addPOJO(printOutput);
+                break;
+            case "getPlayerTwoWins":
+                printOutput = new PrintOutput("getPlayerTwoWins", AppManager.instance.playerTwoWins);
+                output.addPOJO(printOutput);
+                break;
+            case "getTotalGamesPlayed":
+                int gamesPlayed = AppManager.instance.playerOneWins + AppManager.instance.playerTwoWins;
+                printOutput = new PrintOutput("getTotalGamesPlayed", gamesPlayed);
+                output.addPOJO(printOutput);
+                break;
         }
     }
 

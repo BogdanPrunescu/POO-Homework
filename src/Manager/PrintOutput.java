@@ -6,6 +6,7 @@ import fileio.Coordinates;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrintOutput {
 
+    public String gameEnded = null;
 
     public String command = null;
 
@@ -47,5 +48,9 @@ public class PrintOutput {
         this.cardAttacker = cardAttacker;
         this.cardAttacked = cardAttacked;
         this.error = error;
+    }
+
+    public PrintOutput(String gameEnded) {
+        this.gameEnded = gameEnded;
     }
 }

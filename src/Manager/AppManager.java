@@ -28,6 +28,11 @@ public class AppManager {
 
     private ArrayList<GameInput> games = new ArrayList<GameInput>();
 
+    public int totalGamesPlayed = 0;
+
+    public int playerOneWins = 0;
+    public int playerTwoWins = 0;
+
     public void startApp(Input input, ArrayNode output) {
 
         playerOneDecks = input.getPlayerOneDecks();
@@ -42,6 +47,7 @@ public class AppManager {
             GameManager.instance.prepareGame(game.getStartGame(), playerOneDecks, playerTwoDecks, output);
             GameManager.instance.startGame(game.getActions(), output);
             GameManager.instance = null;
+            totalGamesPlayed = 0;
         }
     }
 }
