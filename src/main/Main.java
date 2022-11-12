@@ -15,9 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-import Manager.AppManager;
-
-import fileio_copy.*;
+import manager.AppManager;
 
 
 /**
@@ -74,10 +72,9 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        //TODO add here the entry point to your implementation
         AppManager instance = AppManager.getInstance();
-        AppManager.instance.startApp(inputData, output);
-        AppManager.instance = null;
+        AppManager.getInstance().startApp(inputData, output);
+        AppManager.setInstance(null);
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
