@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.Coordinates;
 
-public class ShowErrors {
+public final class ShowErrors {
 
-    public static void throwCardError(ActionsInput action, String errorType, ArrayNode output) {
+    public static void throwCardError(final ActionsInput action,
+                                      String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Integer playerIdx = action.getPlayerIdx();
@@ -26,7 +27,8 @@ public class ShowErrors {
         }
     }
 
-    public static void throwATKError(ActionsInput action, String errorType, ArrayNode output) {
+    public static void throwATKError(final ActionsInput action,
+                                     String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();
@@ -39,7 +41,8 @@ public class ShowErrors {
         output.addPOJO(printOutput);
     }
 
-    public static void throwAbilityError(ActionsInput action, String errorType, ArrayNode output) {
+    public static void throwAbilityError(final ActionsInput action,
+                                         String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();
@@ -52,7 +55,8 @@ public class ShowErrors {
         output.addPOJO(printOutput);
     }
 
-    public static void throwATKHeroError(ActionsInput action, String errorType, ArrayNode output) {
+    public static void throwATKHeroError(final ActionsInput action,
+                                         String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();

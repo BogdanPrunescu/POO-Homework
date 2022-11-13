@@ -20,6 +20,10 @@ public final class PrintOutput {
 
     private Integer affectedRow = null;
 
+    private Integer x = null;
+
+    private Integer y = null;
+
     private Object output = null;
 
     private String error = null;
@@ -50,6 +54,14 @@ public final class PrintOutput {
         this.setCardAttacker(cardAttacker);
         this.setCardAttacked(cardAttacked);
         this.setError(error);
+    }
+
+    public PrintOutput(final String command, final Integer x,
+                       final Integer y, final Object object) {
+        this.setCommand(command);
+        this.setx(x);
+        this.sety(y);
+        this.setOutput(object);
     }
 
     public PrintOutput(final String gameEnded) {
@@ -126,5 +138,21 @@ public final class PrintOutput {
 
     public void setError(final String error) {
         this.error = error;
+    }
+
+    public Integer getx() {
+        return x;
+    }
+
+    public void setx(final Integer x) {
+        this.x = x;
+    }
+
+    public Integer gety() {
+        return y;
+    }
+
+    public void sety(final Integer y) {
+        this.y = y;
     }
 }

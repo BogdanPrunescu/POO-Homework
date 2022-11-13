@@ -88,10 +88,18 @@ public final class DebugCommands {
                 output.addPOJO(printOutput);
                 break;
             case "getCardAtPosition":
-                card = new Minion(GameManager.getInstance().
-                        getBoard().get(action.getX()).get(action.getY()));
-                printOutput = new PrintOutput("getCardAtPosition", card);
-                output.addPOJO(printOutput);
+                Integer x = action.getX();
+                Integer y = action.getY();
+                if (GameManager.getInstance().getBoard().get(action.getX()).size() >= action.getY()) {
+                    card = new Minion(GameManager.getInstance().
+                            getBoard().get(action.getX()).get(action.getY()));
+                    printOutput = new PrintOutput("getCardAtPosition", x, y, card);
+                    output.addPOJO(printOutput);
+                } else {
+                    String error = "No card available at that position.";
+                    printOutput = new PrintOutput("getCardAtPosition", x, y, error);
+                    output.addPOJO(printOutput);
+                }
                 break;
             case "getFrozenCardsOnTable":
                 cardArrayList = new ArrayList<>();
