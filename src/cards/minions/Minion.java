@@ -10,10 +10,10 @@ import cards.Card;
 import cards.heros.Hero;
 
 import manager.AppManager;
-import manager.GameExceptions;
+import manager.Conditions;
 import manager.GameManager;
 import manager.PrintOutput;
-import manager.ShowErrors;
+import manager.PrintErrors;
 
 import java.util.ArrayList;
 
@@ -84,16 +84,16 @@ public class Minion extends Card {
 
         ArrayList<ArrayList<Card>> hands = GameManager.getInstance().getHands();
 
-        if (GameExceptions.testCardType(card) != 0) {
-            ShowErrors.throwCardError(action, "Cannot place environment card on table.", output);
+        if (Conditions.testCardType(card) != 0) {
+            PrintErrors.throwCardError(action, "Cannot place environment card on table.", output);
 
-        } else if (!GameExceptions.playerHasEnoughMana(card, hero)) {
-            ShowErrors.throwCardError(action, "Not enough mana to place card on table.", output);
+        } else if (!Conditions.playerHasEnoughMana(card, hero)) {
+            PrintErrors.throwCardError(action, "Not enough mana to place card on table.", output);
 
         } else {
-            int rowIdx = GameExceptions.placeCard((Minion) card, board, currentPlayer);
+            int rowIdx = Conditions.placeCard((Minion) card, board, currentPlayer);
             if (rowIdx == -1) {
-                ShowErrors.throwCardError(action,
+                PrintErrors.throwCardError(action,
                         "Cannot place card on table since row is full.", output);
 
             } else {
@@ -120,20 +120,20 @@ public class Minion extends Card {
         Minion attackedMinion = board.get(attackedCard.getX()).get(attackedCard.getY());
 
         if (attackerMinion.isFrozen()) {
-            ShowErrors.throwATKError(action, "Attacker card is frozen.", output);
+            PrintErrors.throwATKError(action, "Attacker card is frozen.", output);
         } else if (attackerMinion.hasAttacked()) {
-            ShowErrors.throwATKError(action,
+            PrintErrors.throwATKError(action,
                     "Attacker card has already attacked this turn.", output);
 
         } else {
-            if (!GameExceptions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
-                ShowErrors.throwATKError(action,
+            if (!Conditions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
+                PrintErrors.throwATKError(action,
                         "Attacked card does not belong to the enemy.", output);
 
             } else {
                 int enemyPlayer = Math.abs(currentPlayer - 1);
-                if (GameExceptions.playerHasTanks(enemyPlayer) && !attackedMinion.isTank()) {
-                    ShowErrors.throwATKError(action,
+                if (Conditions.playerHasTanks(enemyPlayer) && !attackedMinion.isTank()) {
+                    PrintErrors.throwATKError(action,
                             "Attacked card is not of type 'Tank'.", output);
 
                 } else {
@@ -163,16 +163,16 @@ public class Minion extends Card {
         Minion attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
         Minion attackedMinion = board.get(attackedCard.getX()).get(attackedCard.getY());
         if (attackerMinion.isFrozen()) {
-            ShowErrors.throwAbilityError(action, "Attacker card is frozen.", output);
+            PrintErrors.throwAbilityError(action, "Attacker card is frozen.", output);
 
         } else if (attackerMinion.hasAttacked()) {
-            ShowErrors.throwAbilityError(action,
+            PrintErrors.throwAbilityError(action,
                     "Attacker card has already attacked this turn.", output);
 
         } else {
             if (attackerMinion.getName().equals("Disciple")) {
-                if (GameExceptions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
-                    ShowErrors.throwAbilityError(action,
+                if (Conditions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
+                    PrintErrors.throwAbilityError(action,
                             "Attacked card does not belong to the current player.", output);
 
                 } else {
@@ -180,14 +180,14 @@ public class Minion extends Card {
                     attackerMinion.setHasAttacked(true);
                 }
             } else {
-                if (!GameExceptions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
-                    ShowErrors.throwAbilityError(action,
+                if (!Conditions.testIfRowBelongsToEnemy(currentPlayer, attackedCard.getX())) {
+                    PrintErrors.throwAbilityError(action,
                             "Attacked card does not belong to the enemy.", output);
 
                 } else {
                     int enemyPlayer = Math.abs(currentPlayer - 1);
-                    if (GameExceptions.playerHasTanks(enemyPlayer) && !attackedMinion.isTank()) {
-                        ShowErrors.throwAbilityError(action,
+                    if (Conditions.playerHasTanks(enemyPlayer) && !attackedMinion.isTank()) {
+                        PrintErrors.throwAbilityError(action,
                                 "Attacked card is not of type 'Tank'.", output);
 
                     } else {
@@ -221,14 +221,14 @@ public class Minion extends Card {
         Minion attackerMinion = board.get(attackerCard.getX()).get(attackerCard.getY());
 
         if (attackerMinion.isFrozen()) {
-            ShowErrors.throwATKHeroError(action, "Attacker card is frozen.", output);
+            PrintErrors.throwATKHeroError(action, "Attacker card is frozen.", output);
         } else if (attackerMinion.hasAttacked()) {
-            ShowErrors.throwATKHeroError(action,
+            PrintErrors.throwATKHeroError(action,
                     "Attacker card has already attacked this turn.", output);
         } else {
 
-            if (GameExceptions.playerHasTanks(enemyPlayer)) {
-                ShowErrors.throwATKHeroError(action,
+            if (Conditions.playerHasTanks(enemyPlayer)) {
+                PrintErrors.throwATKHeroError(action,
                         "Attacked card is not of type 'Tank'.", output);
             } else {
                 enemyHero.setHealth(enemyHero.getHealth() - attackerMinion.getAttackDamage());

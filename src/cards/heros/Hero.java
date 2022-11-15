@@ -2,9 +2,9 @@ package cards.heros;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
-import manager.GameExceptions;
+import manager.Conditions;
 import manager.GameManager;
-import manager.ShowErrors;
+import manager.PrintErrors;
 import cards.minions.Minion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -54,21 +54,21 @@ public class Hero extends Card {
         int currentPlayer = GameManager.getInstance().getCurrentPlayer();
         int affectedRow = action.getAffectedRow();
 
-        if (!GameExceptions.playerHasEnoughMana(heroes.get(currentPlayer),
+        if (!Conditions.playerHasEnoughMana(heroes.get(currentPlayer),
                 heroes.get(currentPlayer))) {
-            ShowErrors.throwUseHeroAbilityError(action,
+            PrintErrors.throwUseHeroAbilityError(action,
                     "Not enough mana to use hero's ability.", output);
 
         } else if (heroes.get(currentPlayer).hasAttacked()) {
-            ShowErrors.throwUseHeroAbilityError(action,
+            PrintErrors.throwUseHeroAbilityError(action,
                     "Hero has already attacked this turn.", output);
 
         } else {
             if (heroes.get(currentPlayer).getName().equals("Lord Royce")
                     || heroes.get(currentPlayer).getName().equals("Empress Thorina")) {
 
-                if (!GameExceptions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
-                    ShowErrors.throwUseHeroAbilityError(action,
+                if (!Conditions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
+                    PrintErrors.throwUseHeroAbilityError(action,
                             "Selected row does not belong to the enemy.", output);
 
                 } else {
@@ -80,8 +80,8 @@ public class Hero extends Card {
                     heroes.get(currentPlayer).setHasAttacked(true);
                 }
             } else {
-                if (GameExceptions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
-                    ShowErrors.throwUseHeroAbilityError(action,
+                if (Conditions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
+                    PrintErrors.throwUseHeroAbilityError(action,
                             "Selected row does not belong to the current player.", output);
 
                 } else {

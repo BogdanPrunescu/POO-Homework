@@ -59,8 +59,8 @@ public final class PrintOutput {
     public PrintOutput(final String command, final Integer x,
                        final Integer y, final Object object) {
         this.setCommand(command);
-        this.setx(x);
-        this.sety(y);
+        this.setX(x);
+        this.setY(y);
         this.setOutput(object);
     }
 
@@ -140,19 +140,19 @@ public final class PrintOutput {
         this.error = error;
     }
 
-    public Integer getx() {
+    public Integer getX() {
         return x;
     }
 
-    public void setx(final Integer x) {
+    public void setX(final Integer x) {
         this.x = x;
     }
 
-    public Integer gety() {
+    public Integer getY() {
         return y;
     }
 
-    public void sety(final Integer y) {
+    public void setY(final Integer y) {
         this.y = y;
     }
 }

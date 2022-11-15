@@ -4,13 +4,19 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.ActionsInput;
 import fileio.Coordinates;
 
-public final class ShowErrors {
+public final class PrintErrors {
 
+    private PrintErrors() { }
+
+    /**
+     * Function that sends to output any errors that happened when a card was being used.
+     * @param action the action given at input
+     * @param errorType the error that occurred
+     * @param output where the error will be sent
+     */
     public static void throwCardError(final ActionsInput action,
-                                      String errorType, final ArrayNode output) {
+                                     final String errorType, final ArrayNode output) {
         PrintOutput printOutput;
-
-        Integer playerIdx = action.getPlayerIdx();
 
         Integer handIdx = action.getHandIdx();
 
@@ -21,14 +27,20 @@ public final class ShowErrors {
         if (action.getCommand().equals("placeCard")) {
             printOutput = new PrintOutput(command, null, handIdx, null, errorType);
             output.addPOJO(printOutput);
-        } else {
+        } else if (action.getCommand().equals("useEnvironmentCard")) {
             printOutput = new PrintOutput(command, null, handIdx, affectedRow, errorType);
             output.addPOJO(printOutput);
         }
     }
 
+    /**
+     * Function that sends to output any errors that happened when a card has attacked.
+     * @param action the action given at input
+     * @param errorType the error that occurred
+     * @param output where the error will be sent
+     */
     public static void throwATKError(final ActionsInput action,
-                                     String errorType, final ArrayNode output) {
+                                     final String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();
@@ -41,8 +53,15 @@ public final class ShowErrors {
         output.addPOJO(printOutput);
     }
 
+    /**
+     * Function that sends to output any errors that happened when
+     * a card has used its ability.
+     * @param action the action given at input
+     * @param errorType the error that occurred
+     * @param output where the error will be sent
+     */
     public static void throwAbilityError(final ActionsInput action,
-                                         String errorType, final ArrayNode output) {
+                                         final String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();
@@ -55,8 +74,14 @@ public final class ShowErrors {
         output.addPOJO(printOutput);
     }
 
+    /**
+     * Function that sends to output any errors that happened when a card has attacked a hero.
+     * @param action the action given at input
+     * @param errorType the error that occurred
+     * @param output where the error will be sent
+     */
     public static void throwATKHeroError(final ActionsInput action,
-                                         String errorType, final ArrayNode output) {
+                                         final String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Coordinates cardAttacked = action.getCardAttacked();
@@ -69,14 +94,21 @@ public final class ShowErrors {
         output.addPOJO(printOutput);
     }
 
-    public static void throwUseHeroAbilityError(ActionsInput action, String errorType, ArrayNode output) {
+    /**
+     * Function that sends to output any errors that happened when hero has used its ability.
+     * @param action the action given at input
+     * @param errorType the error that occurred
+     * @param output where the error will be sent
+     */
+    public static void throwUseHeroAbilityError(final ActionsInput action,
+                                                final String errorType, final ArrayNode output) {
         PrintOutput printOutput;
 
         Integer affectedRow = action.getAffectedRow();
 
         String command = "useHeroAbility";
 
-        printOutput = new PrintOutput(command,null, null, affectedRow, errorType);
+        printOutput = new PrintOutput(command, null, null, affectedRow, errorType);
         output.addPOJO(printOutput);
     }
 }

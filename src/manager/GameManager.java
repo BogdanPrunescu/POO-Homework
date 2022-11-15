@@ -5,11 +5,25 @@ import cards.environment.Firestorm;
 import cards.environment.HeardHound;
 import cards.environment.Winterfell;
 import cards.Card;
-import cards.heros.*;
+import cards.heros.EmpressThorina;
+import cards.heros.GeneralKocioraw;
+import cards.heros.Hero;
+import cards.heros.KingMudface;
+import cards.heros.LordRoyce;
+import cards.minions.Berserker;
+import cards.minions.Disciple;
+import cards.minions.Goliath;
+import cards.minions.Minion;
+import cards.minions.Miraj;
+import cards.minions.Sentinel;
+import cards.minions.TheCursedOne;
+import cards.minions.TheRipper;
+import cards.minions.Warden;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import fileio.*;
-import cards.minions.*;
+import fileio.ActionsInput;
+import fileio.CardInput;
+import fileio.DecksInput;
 import fileio.StartGameInput;
 
 import java.util.ArrayList;
@@ -149,16 +163,18 @@ public final class GameManager {
     public void startGame(final ArrayList<ActionsInput> actions, final ArrayNode output) {
 
         setCurrentPlayer(getStartingPlayer());
+
         // get first card for both players
         getHands().get(0).add(getGameDecks().get(0).get(0));
         getGameDecks().get(0).remove(0);
-
         getHands().get(1).add(getGameDecks().get(1).get(0));
         getGameDecks().get(1).remove(0);
 
+        // set both players mana to 1
         getHeroes().get(0).setPlayingMana(getCurrentRoundMana());
         getHeroes().get(1).setPlayingMana(getCurrentRoundMana());
 
+        // set both players health to 30
         getHeroes().get(0).setHealth(HEROHEALTH);
         getHeroes().get(1).setHealth(HEROHEALTH);
 
@@ -208,7 +224,7 @@ public final class GameManager {
      */
     public void resetMinionStatesForPlayer(final int player) {
         if (player == 0) {
-            for (int i = 2; i < 4; i++) {
+            for (int i = 2; i < getBoard().size(); i++) {
                 for (Minion minion : getBoard().get(i)) {
                     minion.setIsFrozen(false);
                     minion.setHasAttacked(false);

@@ -6,11 +6,11 @@ import cards.minions.Minion;
 
 import java.util.ArrayList;
 
-public final class GameExceptions {
+public final class Conditions {
 
     public static final int MAX_CARDS_ON_ROW = 5;
     public static final int NR_ROWS = 3;
-    private GameExceptions() { }
+    private Conditions() { }
 
     /**
      * Checks if a card is an Environment or a Minion card

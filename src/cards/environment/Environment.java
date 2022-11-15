@@ -5,9 +5,9 @@ import fileio.ActionsInput;
 import cards.Card;
 import fileio.CardInput;
 import cards.heros.Hero;
-import manager.GameExceptions;
+import manager.Conditions;
 import manager.GameManager;
-import manager.ShowErrors;
+import manager.PrintErrors;
 import cards.minions.Minion;
 
 import java.util.ArrayList;
@@ -46,22 +46,22 @@ public class Environment extends Card {
 
         ArrayList<Card> playerHand = GameManager.getInstance().getHands().get(currentPlayer);
 
-        if (GameExceptions.testCardType(card) != 1) {
-            ShowErrors.throwCardError(action, "Chosen card is not of type environment.",
+        if (Conditions.testCardType(card) != 1) {
+            PrintErrors.throwCardError(action, "Chosen card is not of type environment.",
                     output);
 
-        } else if (!GameExceptions.playerHasEnoughMana(card, currentHero)) {
-            ShowErrors.throwCardError(action, "Not enough mana to use environment card.", output);
+        } else if (!Conditions.playerHasEnoughMana(card, currentHero)) {
+            PrintErrors.throwCardError(action, "Not enough mana to use environment card.", output);
 
         } else {
-            if (!GameExceptions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
-                ShowErrors.throwCardError(action, "Chosen row does not belong to the enemy.",
+            if (!Conditions.testIfRowBelongsToEnemy(currentPlayer, affectedRow)) {
+                PrintErrors.throwCardError(action, "Chosen row does not belong to the enemy.",
                         output);
 
             } else {
                 if (card.getName().equals("Heart Hound")
-                        && !GameExceptions.testHeartHound(board, affectedRow)) {
-                    ShowErrors.throwCardError(action,
+                        && !Conditions.testHeartHound(board, affectedRow)) {
+                    PrintErrors.throwCardError(action,
                             "Cannot steal enemy card since the player's row is full.", output);
 
                 } else {

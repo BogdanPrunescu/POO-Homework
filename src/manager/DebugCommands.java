@@ -90,9 +90,9 @@ public final class DebugCommands {
             case "getCardAtPosition":
                 Integer x = action.getX();
                 Integer y = action.getY();
-                if (GameManager.getInstance().getBoard().get(action.getX()).size() >= action.getY()) {
-                    card = new Minion(GameManager.getInstance().
-                            getBoard().get(action.getX()).get(action.getY()));
+                ArrayList<ArrayList<Minion>> board = GameManager.getInstance().getBoard();
+                if (board.get(action.getX()).size() >= action.getY()) {
+                    card = new Minion(board.get(action.getX()).get(action.getY()));
                     printOutput = new PrintOutput("getCardAtPosition", x, y, card);
                     output.addPOJO(printOutput);
                 } else {

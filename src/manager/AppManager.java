@@ -50,7 +50,6 @@ public final class AppManager {
         }
 
         for (GameInput game : games) {
-            GameManager instance = GameManager.getInstance();
             GameManager.getInstance().prepareGame(game.getStartGame(),
                     playerOneDecks, playerTwoDecks, output);
             GameManager.getInstance().startGame(game.getActions(), output);

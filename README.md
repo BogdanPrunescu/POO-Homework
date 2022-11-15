@@ -1,44 +1,41 @@
-
-
 # Tema POO  - GwentStone
 
 <div align="center"><img src="https://tenor.com/view/witcher3-gif-9340436.gif" width="500px"></div>
 
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema)
+## Homework Structure
+
+Tema se foloseste de doua clase principale pentru a executa si rula jocurile:
+
+**AppManager** -> clasa care pregateste fiecare test prin a lua toate deckurile
+jucatorilor si toate meciurile.
+
+**GameManager** -> clasa care pregateste fiecare joc si ruleaza actiunile date
+la input. GameManager se ocupa si de retinerea elementelor dintr-un joc:
+cartile de pe masa, cartile din mana jucatorilor, eroii, playerul care isi
+joaca tura intr-un moment dat, mana care trebuie data fiecarui jucator etc.
+
+In plus, am creat alte clase pentru a modulariza afisarea si tratarea cazurilor
+invalide:
+
+**DebugCommands** -> are o singura functie statica in care tratez comenzile de
+debug. Pentru cateva din cazuri a trebuit sa clonez outputul deoarece aveam
+nevoie de o copie a referintei pentru a afisa statutul unui obiect la un
+moment dat.
+
+**Conditions** -> este o clasa care contine functii de test pentru anumite
+conditii din joc (verifica daca un player are un tank, daca cartea HeartHound
+poate fi folosita etc.)
+
+**PrintOutput** -> clasa ajutatoare pe care o folosesc sa afisez outputurile
+destul de usor. Are multi constructori care sunt folositi in fuctie de ce vreau
+sa afisez la output.
+
+**PrintErrors** -> contine functii care se apeleaza atunci cand avem cazuri
+invalide.
+
+Clasa Card contine informatii universale pentru fiecare clasa ce o mosteneste:
+Clasele minion, environment si hero mostenesc clasa Card plus faptul ca fiecare
+contine functii pentru rularea comenzilor din input specifice lor (clasa minion
+are implementata functiile placeCard, attack si useAbility).
 
 
-## Skel Structure
-
-* src/
-  * checker/ - checker files
-  * fileio/ - contains classes used to read data from the json files
-  * main/
-      * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-      * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-        to the out.txt file. Thus, you can compare this result with ref.
-* input/ - contains the tests in JSON format
-* ref/ - contains all reference output for the tests in JSON format
-
-## Tests
-
-1. test01_game_start - 3p
-2. test02_place_card - 4p
-3. test03_place_card_invalid - 4p
-4. test04_use_env_card - 4p
-5. test05_use_env_card_invalid - 4p
-6. test06_attack_card - 4p
-7. test07_attack_card_invalid - 4p
-8. test08_use_card_ability - 4p
-9. test09_use_card_ability_invalid -4p
-10. test10_attack_hero - 4p
-11. test11_attack_hero_invalid - 4p
-12. test12_use_hero_ability_1 - 4p
-13. test13_use_hero_ability_2 - 4p
-14. test14_use_hero_ability_invalid_1 - 4p
-15. test15_use_hero_ability_invalid_2 - 4p
-16. test16_multiple_games_valid - 5p
-17. test17_multiple_games_invalid - 6p
-18. test18_big_game - 10p
-
-
-<div align="center"><img src="https://tenor.com/view/homework-time-gif-24854817.gif" width="500px"></div>
