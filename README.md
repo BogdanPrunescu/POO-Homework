@@ -38,4 +38,9 @@ Clasele minion, environment si hero mostenesc clasa Card plus faptul ca fiecare
 contine functii pentru rularea comenzilor din input specifice lor (clasa minion
 are implementata functiile placeCard, attack si useAbility).
 
+Mai jos am atasat o poza in care se pot vedea totate clasele legate de cartile
+de joc.
+
+<div align="center"><img src="img/package.png" width="500px"></div>
+
 
